@@ -16,4 +16,5 @@ After this, In ArcGIS pro, using Raster Calculator tool, Building footprints hei
 
 ### Generation of DSM
 https://code.earthengine.google.com/d3c8f811a2dd0b1218e018eb84a9ab0e
+
 In case, you face any difficulty in accessing the above link, you can refer the dsm_generation.txt file for code which you can paste on Google earth engine code editor to download required DSM data.
