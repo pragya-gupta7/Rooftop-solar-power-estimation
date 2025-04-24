@@ -1,0 +1,30 @@
+// Load preprocessed building footprints raster (Band 1: binary, Band 2: height)
+var buildingFootprints = ee.Image('projects/bah-dashboard/assets/building_data2023');
+
+// Load preprocessed DTM (4m resolution)
+var dtm = ee.Image('projects/bah-dashboard/assets/dtm_4m');
+
+// Step 1: Extract the binary building mask (Band 1) and building heights (Band 2)
+var buildingBinary = buildingFootprints.select(2);  // Band 1 (Binary: 1 = Building, 0 = Non-building)
+var buildingHeights = buildingFootprints.select(1); // Band 2 (Building Height in meters)
+
+// Step 2: Multiply binary mask by building heights to ensure only buildings have height values
+var buildingHeightRaster = buildingBinary.multiply(buildingHeights);
+
+// Step 3: Compute DSM as DTM + Building Heights
+var dsm = dtm.add(buildingHeightRaster);
+
+// Step 4: Visualization
+var vis = {min: 0, max: 50, palette: ['black', 'orange', 'red']};
+Map.addLayer(dsm, vis, 'Digital Surface Model');
+Map.centerObject(buildingFootprints, 16);
+
+// Step 5: Export DSM to Google Drive
+Export.image.toDrive({
+  image: dsm,
+  description: 'DSM_4m',
+  region: buildingFootprints.geometry(),
+  scale: 4,
+  crs: 'EPSG:32645',  // Change this to match your UTM zone
+  fileFormat: 'GeoTIFF'
+});
